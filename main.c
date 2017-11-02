@@ -1,18 +1,32 @@
 #include <stdio.h>
 #include <math.h>
 
-double aa(double k){
+double aa(double k)
+{
     double w = 2*3.14159265359/1e-3;
     return (2 / 1e-3) * (-0.000660) * coshl( k * w * 1e-3);
 }
-double bb(double k){
+
+double bb(double k)
+{
     double w = 2*3.14159265359/1e-3;
     return (2 / 1e-3) * (-0.000660) * sinhl( k * w * 1e-3);
 }
-double aak(double k) {
-    double sum, w = 2*3.14159265359/1e-3;
+
+double aak(double k)
+{
+    double sum;
+    double w = 2*3.14159265359/1e-3;
     return (2 * (1e-3/200))/1e-3 * (-0.000660) * sinhl( k * w * 1e-3);
 }
+
+double area(double height)
+{
+    double area = 0;
+    area += height * 0.001/200;
+    return area;
+}
+
 int main() {
     float x, y, T = 1e-3, N = 200, h = T/N, k, a, b, pl, test; //coef[50] ;
     float coef = 0.00125;
@@ -20,8 +34,8 @@ int main() {
     int I=1;
     double w = 2*PI/T;
     FILE *myfilex, *myfiley,*myfile, *ak, *bk;
-    //myfilex = fopen("myfilex.txt", "wt");
-    //myfiley = fopen("myfiley.txt", "wt");
+    myfilex = fopen("myfilex.txt", "wt");
+    myfiley = fopen("myfiley.txt", "wt");
     myfile = fopen("myfile.txt", "wt");
     ak = fopen("ak.txt", "wt");
     bk = fopen("bk.txt", "wt");
@@ -30,39 +44,45 @@ int main() {
     pl = 0;
 
    while (x <= 0.001) {
+
        if (x<=0.00025) {
            y = 5 * x / 0.00025;
            printf("y = %f \n", y);
-          // fprintf(myfilex,"%.10f\n", x);
-          // fprintf(myfiley,"%.10f\n", y);
+           fprintf(myfilex,"%.10f\n", x);
+           fprintf(myfiley,"%.10f\n", y);
            fprintf(myfile,"%.10f %.10f \n", x, y);
-           pl = pl + y*0.001/N;
+           pl += area(y);
        }
+
        if ((x>0.00025)&&(x<=0.0005)) {
-           y =
-           5 - 5 * (x - 0.00025) / 0.00025;
+           y = 5 - 5 * (x - 0.00025) / 0.00025;
            printf("y = %f \n", y);
-          // fprintf(myfilex,"%.10f\n", x);
-          // fprintf(myfiley,"%.10f\n", y);
+           fprintf(myfilex,"%.10f\n", x);
+           fprintf(myfiley,"%.10f\n", y);
            fprintf(myfile,"%.10f %.10f \n", x, y);
-           pl = pl + y*0.001/N;
+           pl += area(y);
        }
+
        if ((x>0.0005)&&(x<=0.001)) {
             y = 6 * sin(2 * PI * x / 0.001);
             printf("y = %f \n", y);
-          // fprintf(myfilex,"%.10f\n", x);
-          //fprintf(myfiley,"%.10f\n", y);
+            fprintf(myfilex,"%.10f\n", x);
+            fprintf(myfiley,"%.10f\n", y);
            fprintf(myfile,"%.10f %.10f \n", x, y);
-           pl = pl + y*0.001/N;
+           pl += area(y);
        }
+
        x += 0.001/N;
    }
+
    int i = -1;
    while(i <2*N+1){
     fprintf(ak,"ak%d = %.10f\n",i, aak(i));
     fprintf(bk,"ak%d = %.10f\n",i, bb(i));
     i++;
    }
+
+
     printf("t = %f \n", T);
     printf("N = %f \n", N);
     printf("h = %f \n", h);
